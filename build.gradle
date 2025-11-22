@@ -1,0 +1,95 @@
+plugins {
+    id 'java'
+    id 'io.gatling.gradle' version '3.14.9'
+}
+
+group = 'com.performance.test'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+    gatling 'io.gatling.highcharts:gatling-charts-highcharts:3.14.9'
+    gatling 'io.gatling:gatling-app:3.14.9'
+    gatling 'io.gatling:gatling-recorder:3.14.9'
+}
+
+tasks.register('loadTest', JavaExec) {
+    dependsOn 'testClasses'
+    mainClass = 'io.gatling.app.Gatling'
+    classpath = sourceSets.gatling.runtimeClasspath
+    systemProperty 'testType', 'load'
+    jvmArgs = [
+            '--add-opens',
+            'java.base/java.lang=ALL-UNNAMED'
+    ]
+    args = [
+            '--simulation', 'simulations.PokemonSimulation',
+            '--results-folder', 'build/reports/gatling'
+    ]
+}
+
+tasks.register('stressTest', JavaExec) {
+    dependsOn 'testClasses'
+    mainClass = 'io.gatling.app.Gatling'
+    classpath = sourceSets.gatling.runtimeClasspath
+    systemProperty 'testType', 'stress'
+    jvmArgs = [
+            '--add-opens',
+            'java.base/java.lang=ALL-UNNAMED'
+    ]
+    args = [
+            '--simulation', 'simulations.PokemonSimulation',
+            '--results-folder', 'build/reports/gatling'
+    ]
+}
+
+tasks.register('spikeTest', JavaExec) {
+    dependsOn 'testClasses'
+    mainClass = 'io.gatling.app.Gatling'
+    classpath = sourceSets.gatling.runtimeClasspath
+    systemProperty 'testType', 'spike'
+    jvmArgs = [
+            '--add-opens',
+            'java.base/java.lang=ALL-UNNAMED'
+    ]
+    args = [
+            '--simulation', 'simulations.PokemonSimulation',
+            '--results-folder', 'build/reports/gatling'
+    ]
+}
+
+tasks.register('enduranceTest', JavaExec) {
+    dependsOn 'testClasses'
+    mainClass = 'io.gatling.app.Gatling'
+    classpath = sourceSets.gatling.runtimeClasspath
+    systemProperty 'testType', 'endurance'
+    jvmArgs = [
+            '--add-opens',
+            'java.base/java.lang=ALL-UNNAMED'
+    ]
+    args = [
+            '--simulation', 'simulations.PokemonSimulation',
+            '--results-folder', 'build/reports/gatling'
+    ]
+}
+
+tasks.register('volumeTest', JavaExec) {
+    dependsOn 'testClasses'
+    mainClass = 'io.gatling.app.Gatling'
+    classpath = sourceSets.gatling.runtimeClasspath
+    systemProperty 'testType', 'volume'
+    jvmArgs = [
+            '--add-opens',
+            'java.base/java.lang=ALL-UNNAMED'
+    ]
+    args = [
+            '--simulation', 'simulations.PokemonSimulation',
+            '--results-folder', 'build/reports/gatling'
+    ]
+}

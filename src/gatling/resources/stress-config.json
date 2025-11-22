@@ -1,0 +1,22 @@
+{
+  "loadPatterns": {
+    "mixedOperations": {
+      "scenario": "mixedOperations",
+      "phase1RampFrom": 1,
+      "phase1RampTo": 50,
+      "phase1RampDuration": 120,
+      "phase1ConstantRate": 50,
+      "phase1ConstantDuration": 180,
+      "phase2RampFrom": 50,
+      "phase2RampTo": 100,
+      "phase2RampDuration": 120,
+      "phase2ConstantRate": 100,
+      "phase2ConstantDuration": 180
+    }
+  },
+  "assertions": {
+    "stress": {
+      "maxResponseTime": 10000
+    }
+  }
+}

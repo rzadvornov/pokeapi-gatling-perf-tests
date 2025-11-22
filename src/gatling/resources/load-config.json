@@ -1,0 +1,65 @@
+{
+  "loadPatterns": {
+    "getPokemonById": {
+      "scenario": "getPokemonById",
+      "rampFrom": 1,
+      "rampTo": 10,
+      "rampDuration": 60,
+      "constantRate": 10,
+      "constantDuration": 300
+    },
+    "getPokemonByName": {
+      "scenario": "getPokemonByName",
+      "rampFrom": 1,
+      "rampTo": 5,
+      "rampDuration": 60,
+      "constantRate": 5,
+      "constantDuration": 300
+    },
+    "listPokemon": {
+      "scenario": "listPokemon",
+      "rampFrom": 1,
+      "rampTo": 3,
+      "rampDuration": 60,
+      "constantRate": 3,
+      "constantDuration": 300
+    },
+    "getPokemonAbilities": {
+      "scenario": "getPokemonAbilities",
+      "rampFrom": 1,
+      "rampTo": 2,
+      "rampDuration": 60,
+      "constantRate": 2,
+      "constantDuration": 300
+    },
+    "mixedOperations": {
+      "scenario": "mixedOperations",
+      "rampFrom": 1,
+      "rampTo": 50,
+      "rampDuration": 120,
+      "constantRate": 50,
+      "constantDuration": 180
+    }
+  },
+  "assertions": {
+    "load": {
+      "maxResponseTime": 5000,
+      "successRate": 95.0
+    },
+    "stress": {
+      "maxResponseTime": 10000
+    },
+    "spike": {
+      "maxResponseTime": 15000,
+      "successRate": 80.0
+    },
+    "endurance": {
+      "percentile95": 5000,
+      "successRate": 95.0
+    },
+    "volume": {
+      "maxResponseTime": 8000,
+      "successRate": 90.0
+    }
+  }
+}

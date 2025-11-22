@@ -1,0 +1,6 @@
+{
+  "baseUrl": "https://pokeapi.co/api/v2",
+  "acceptHeader": "application/json",
+  "acceptEncodingHeader": "gzip, deflate",
+  "userAgentHeader": "Gatling Performance Test"
+}

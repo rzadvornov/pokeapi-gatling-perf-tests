@@ -1,0 +1,34 @@
+{
+  "loadPatterns": {
+    "getPokemonById": {
+      "scenario": "getPokemonById",
+      "rampFrom": 1,
+      "rampTo": 15,
+      "rampDuration": 120,
+      "constantRate": 15,
+      "constantDuration": 3600
+    },
+    "getPokemonByName": {
+      "scenario": "getPokemonByName",
+      "rampFrom": 1,
+      "rampTo": 10,
+      "rampDuration": 120,
+      "constantRate": 10,
+      "constantDuration": 3600
+    },
+    "listPokemon": {
+      "scenario": "listPokemon",
+      "rampFrom": 1,
+      "rampTo": 5,
+      "rampDuration": 120,
+      "constantRate": 5,
+      "constantDuration": 3600
+    }
+  },
+  "assertions": {
+    "endurance": {
+      "percentile95": 5000,
+      "successRate": 95.0
+    }
+  }
+}

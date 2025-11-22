@@ -1,0 +1,28 @@
+{
+  "loadPatterns": {
+    "getPokemonById": {
+      "scenario": "getPokemonById",
+      "pause1Duration": 10,
+      "spike1Users": 100,
+      "pause2Duration": 30,
+      "spike2Users": 200,
+      "pause3Duration": 30,
+      "spike3Users": 300
+    },
+    "listPokemon": {
+      "scenario": "listPokemon",
+      "pause1Duration": 10,
+      "spike1Users": 50,
+      "pause2Duration": 30,
+      "spike2Users": 100,
+      "pause3Duration": 30,
+      "spike3Users": 150
+    }
+  },
+  "assertions": {
+    "spike": {
+      "maxResponseTime": 15000,
+      "successRate": 80.0
+    }
+  }
+}
