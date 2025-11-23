@@ -11,8 +11,11 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'org.projectlombok:lombok:1.18.30'
-    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+    compileOnly("org.projectlombok:lombok:1.18.42")
+    annotationProcessor("org.projectlombok:lombok:1.18.42")
+
+    gatlingCompileOnly 'org.projectlombok:lombok:1.18.42'
+    gatlingAnnotationProcessor 'org.projectlombok:lombok:1.18.42'
 
     gatling 'io.gatling.highcharts:gatling-charts-highcharts:3.14.9'
     gatling 'io.gatling:gatling-app:3.14.9'

@@ -12,9 +12,9 @@ public class HttpProtocolFactory {
         TestConfig.HttpConfig httpConfig = config.getHttp();
 
         return http
-                .baseUrl(httpConfig.getBaseUrl())
-                .acceptHeader(httpConfig.getAcceptHeader())
-                .acceptEncodingHeader(httpConfig.getAcceptEncodingHeader())
-                .userAgentHeader(httpConfig.getUserAgentHeader());
+                .baseUrl(httpConfig.baseUrl())
+                .acceptHeader(httpConfig.acceptHeader())
+                .acceptEncodingHeader(httpConfig.acceptEncodingHeader())
+                .userAgentHeader(httpConfig.userAgentHeader());
     }
 }

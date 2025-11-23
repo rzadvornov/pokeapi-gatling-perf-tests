@@ -1,11 +1,13 @@
 package simulations.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Data;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
+@Data
 public class TestConfig {
     private HttpConfig http;
     private Map<String, LoadPattern> loadPatterns;
@@ -22,7 +24,7 @@ public class TestConfig {
         }
         TestConfig config = mapper.readValue(is, TestConfig.class);
 
-        if (config.getHttp() == null) { // Retaining getter/setter logic for Jackson compatibility in outer class
+        if (config.getHttp() == null) {
             InputStream httpIs = TestConfig.class.getClassLoader().getResourceAsStream(DEFAULT_HTTP_CONFIG);
             if (httpIs != null) {
                 HttpConfig httpConfig = mapper.readValue(httpIs, HttpConfig.class);
@@ -33,30 +35,6 @@ public class TestConfig {
         }
 
         return config;
-    }
-
-    public HttpConfig getHttp() {
-        return http;
-    }
-
-    public void setHttp(HttpConfig http) {
-        this.http = http;
-    }
-
-    public Map<String, LoadPattern> getLoadPatterns() {
-        return loadPatterns;
-    }
-
-    public void setLoadPatterns(Map<String, LoadPattern> loadPatterns) {
-        this.loadPatterns = loadPatterns;
-    }
-
-    public Map<String, Assertion> getAssertions() {
-        return assertions;
-    }
-
-    public void setAssertions(Map<String, Assertion> assertions) {
-        this.assertions = assertions;
     }
 
     public record HttpConfig(

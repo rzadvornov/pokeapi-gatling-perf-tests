@@ -1,5 +1,8 @@
 package simulations.strategy;
 
+import lombok.Getter;
+
+@Getter
 public enum TestType {
     LOAD("load", new LoadTestStrategy(), "load-config.json"),
     STRESS("stress", new StressTestStrategy(), "stress-config.json"),
@@ -15,18 +18,6 @@ public enum TestType {
         this.name = name;
         this.strategy = strategy;
         this.configFile = configFile;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public TestStrategy getStrategy() {
-        return strategy;
-    }
-
-    public String getConfigFile() {
-        return configFile;
     }
 
     public static TestType fromString(String name) {
