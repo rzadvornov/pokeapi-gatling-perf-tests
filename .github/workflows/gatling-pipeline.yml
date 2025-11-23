@@ -1,0 +1,73 @@
+name: Gatling Performance Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_type:
+        description: 'Select the simulation strategy to run'
+        required: true
+        default: 'load'
+        type: choice
+        options:
+          - load
+          - stress
+          - spike
+          - endurance
+          - volume
+
+permissions:
+  contents: write
+
+jobs:
+  performance-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Build Docker Image
+        run: docker build -t gatling-performance-test .
+
+      - name: Run Gatling Simulation
+        run: |
+          mkdir results
+          # Runs the container with the input selected in the dropdown
+          docker run --rm \
+            -v ${{ github.workspace }}/results:/app/build/reports/gatling \
+            -e TEST_TYPE=${{ inputs.test_type }} \
+            gatling-performance-test
+        continue-on-error: true
+
+      - name: Prepare Report for Visualization
+        id: prepare_report
+        if: always()
+        run: |
+          mkdir public
+          
+          REPORT_DIR=$(find results -mindepth 1 -maxdepth 1 -type d | head -n 1)
+          
+          if [ -d "$REPORT_DIR" ]; then
+            echo "Found report in $REPORT_DIR"
+            cp -r "$REPORT_DIR"/* public/
+            echo "report_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "No report directory found!"
+            echo "report_exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload Artifact (Downloadable)
+        if: steps.prepare_report.outputs.report_exists == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: gatling-report-${{ inputs.test_type }}
+          path: public/
+
+      - name: Deploy Report to GitHub Pages 🚀
+        if: steps.prepare_report.outputs.report_exists == 'true'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          force_orphan: true
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
