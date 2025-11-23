@@ -15,20 +15,21 @@ COPY src ./src
 RUN gradle build --no-daemon
 
 # ---------------------------------------------------
-# Runtime Stage: Minimal JRE 21
-# (Note: Standard comments start with #, not dashes)
+# Runtime Stage: Eclipse Temurin JDK 21
+# We need the full JDK (not JRE) because we are running via ./gradlew
 # ---------------------------------------------------
-FROM openjdk:21-jre-slim
+FROM eclipse-temurin:21-jdk
 
 WORKDIR /app
 
 # Install curl if needed (optional)
+# eclipse-temurin is based on Ubuntu/Debian, so apt-get works
 RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
 # 1. Copy the build artifacts
 COPY --from=builder /app/build /app/build
 
-# 2. Copy the Gradle Wrapper (Make sure to copy the wrapper script specifically)
+# 2. Copy the Gradle Wrapper
 COPY --from=builder /app/gradlew /app/
 COPY --from=builder /app/gradle /app/gradle
 
