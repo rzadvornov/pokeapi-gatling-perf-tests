@@ -26,20 +26,20 @@ public class SpikeTestStrategy implements TestStrategy {
 
         return Arrays.asList(
                 getPokemonById.injectOpen(
-                        nothingFor(byIdPattern.getPause1Duration()),
-                        atOnceUsers(byIdPattern.getSpike1Users()),
-                        nothingFor(byIdPattern.getPause2Duration()),
-                        atOnceUsers(byIdPattern.getSpike2Users()),
-                        nothingFor(byIdPattern.getPause3Duration()),
-                        atOnceUsers(byIdPattern.getSpike3Users())
+                        nothingFor(byIdPattern.pause1Duration()),
+                        atOnceUsers(byIdPattern.spike1Users()),
+                        nothingFor(byIdPattern.pause2Duration()),
+                        atOnceUsers(byIdPattern.spike2Users()),
+                        nothingFor(byIdPattern.pause3Duration()),
+                        atOnceUsers(byIdPattern.spike3Users())
                 ),
                 listPokemon.injectOpen(
-                        nothingFor(listPattern.getPause1Duration()),
-                        atOnceUsers(listPattern.getSpike1Users()),
-                        nothingFor(listPattern.getPause2Duration()),
-                        atOnceUsers(listPattern.getSpike2Users()),
-                        nothingFor(listPattern.getPause3Duration()),
-                        atOnceUsers(listPattern.getSpike3Users())
+                        nothingFor(listPattern.pause1Duration()),
+                        atOnceUsers(listPattern.spike1Users()),
+                        nothingFor(listPattern.pause2Duration()),
+                        atOnceUsers(listPattern.spike2Users()),
+                        nothingFor(listPattern.pause3Duration()),
+                        atOnceUsers(listPattern.spike3Users())
                 )
         );
     }
@@ -50,10 +50,10 @@ public class SpikeTestStrategy implements TestStrategy {
         setUp.assertions(
                 global().responseTime()
                         .max()
-                        .lt(assertion.getMaxResponseTime()),
+                        .lt(assertion.maxResponseTime()),
                 global().successfulRequests()
                         .percent()
-                        .gt(assertion.getSuccessRate())
+                        .gt(assertion.successRate())
         );
     }
 }

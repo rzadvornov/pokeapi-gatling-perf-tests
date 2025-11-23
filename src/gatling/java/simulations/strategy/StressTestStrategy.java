@@ -25,16 +25,16 @@ public class StressTestStrategy implements TestStrategy {
 
         return Collections.singletonList(
                 mixedOperations.injectOpen(
-                        rampUsersPerSec(pattern.getPhase1RampFrom())
-                                .to(pattern.getPhase1RampTo())
-                                .during(pattern.getPhase1RampDuration()),
-                        constantUsersPerSec(pattern.getPhase1ConstantRate())
-                                .during(pattern.getPhase1ConstantDuration()),
-                        rampUsersPerSec(pattern.getPhase2RampFrom())
-                                .to(pattern.getPhase2RampTo())
-                                .during(pattern.getPhase2RampDuration()),
-                        constantUsersPerSec(pattern.getPhase2ConstantRate())
-                                .during(pattern.getPhase2ConstantDuration())
+                        rampUsersPerSec(pattern.phase1RampFrom())
+                                .to(pattern.phase1RampTo())
+                                .during(pattern.phase1RampDuration()),
+                        constantUsersPerSec(pattern.phase1ConstantRate())
+                                .during(pattern.phase1ConstantDuration()),
+                        rampUsersPerSec(pattern.phase2RampFrom())
+                                .to(pattern.phase2RampTo())
+                                .during(pattern.phase2RampDuration()),
+                        constantUsersPerSec(pattern.phase2ConstantRate())
+                                .during(pattern.phase2ConstantDuration())
                 )
         );
     }
@@ -45,7 +45,7 @@ public class StressTestStrategy implements TestStrategy {
         setUp.assertions(
                 global().responseTime()
                         .max()
-                        .lt(assertion.getMaxResponseTime())
+                        .lt(assertion.maxResponseTime())
         );
     }
 }

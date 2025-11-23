@@ -4,11 +4,10 @@ import io.gatling.javaapi.core.PopulationBuilder;
 import io.gatling.javaapi.core.ScenarioBuilder;
 import io.gatling.javaapi.core.Simulation;
 import simulations.config.TestConfig;
-
-import java.util.Arrays;
 import java.util.List;
 
 import static io.gatling.javaapi.core.CoreDsl.*;
+import static java.util.Arrays.asList;
 
 public class EnduranceTestStrategy implements TestStrategy {
 
@@ -25,27 +24,27 @@ public class EnduranceTestStrategy implements TestStrategy {
         var byNamePattern = config.getLoadPatterns().get("getPokemonByName");
         var listPattern = config.getLoadPatterns().get("listPokemon");
 
-        return Arrays.asList(
+        return asList(
                 getPokemonById.injectOpen(
-                        rampUsersPerSec(byIdPattern.getRampFrom())
-                                .to(byIdPattern.getRampTo())
-                                .during(byIdPattern.getRampDuration()),
-                        constantUsersPerSec(byIdPattern.getConstantRate())
-                                .during(byIdPattern.getConstantDuration())
+                        rampUsersPerSec(byIdPattern.rampFrom())
+                                .to(byIdPattern.rampTo())
+                                .during(byIdPattern.rampDuration()),
+                        constantUsersPerSec(byIdPattern.constantRate())
+                                .during(byIdPattern.constantDuration())
                 ),
                 getPokemonByName.injectOpen(
-                        rampUsersPerSec(byNamePattern.getRampFrom())
-                                .to(byNamePattern.getRampTo())
-                                .during(byNamePattern.getRampDuration()),
-                        constantUsersPerSec(byNamePattern.getConstantRate())
-                                .during(byNamePattern.getConstantDuration())
+                        rampUsersPerSec(byNamePattern.rampFrom())
+                                .to(byNamePattern.rampTo())
+                                .during(byNamePattern.rampDuration()),
+                        constantUsersPerSec(byNamePattern.constantRate())
+                                .during(byNamePattern.constantDuration())
                 ),
                 listPokemon.injectOpen(
-                        rampUsersPerSec(listPattern.getRampFrom())
-                                .to(listPattern.getRampTo())
-                                .during(listPattern.getRampDuration()),
-                        constantUsersPerSec(listPattern.getConstantRate())
-                                .during(listPattern.getConstantDuration())
+                        rampUsersPerSec(listPattern.rampFrom())
+                                .to(listPattern.rampTo())
+                                .during(listPattern.rampDuration()),
+                        constantUsersPerSec(listPattern.constantRate())
+                                .during(listPattern.constantDuration())
                 )
         );
     }
@@ -55,11 +54,11 @@ public class EnduranceTestStrategy implements TestStrategy {
         var assertion = config.getAssertions().get(TestType.ENDURANCE.getName());
         setUp.assertions(
                 global().responseTime()
-                        .percentile(assertion.getSuccessRate())
-                        .lt(assertion.getPercentile95()),
+                        .percentile(assertion.successRate())
+                        .lt(assertion.percentile95()),
                 global().successfulRequests()
                         .percent()
-                        .gt(assertion.getSuccessRate())
+                        .gt(assertion.successRate())
         );
     }
 }

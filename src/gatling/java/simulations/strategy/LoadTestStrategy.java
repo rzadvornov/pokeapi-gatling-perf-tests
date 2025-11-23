@@ -28,32 +28,32 @@ public class LoadTestStrategy implements TestStrategy {
 
         return Arrays.asList(
                 getPokemonById.injectOpen(
-                        rampUsersPerSec(byIdPattern.getRampFrom())
-                                .to(byIdPattern.getRampTo())
-                                .during(byIdPattern.getRampDuration()),
-                        constantUsersPerSec(byIdPattern.getConstantRate())
-                                .during(byIdPattern.getConstantDuration())
+                        rampUsersPerSec(byIdPattern.rampFrom())
+                                .to(byIdPattern.rampTo())
+                                .during(byIdPattern.rampDuration()),
+                        constantUsersPerSec(byIdPattern.constantRate())
+                                .during(byIdPattern.constantDuration())
                 ),
                 getPokemonByName.injectOpen(
-                        rampUsersPerSec(byNamePattern.getRampFrom())
-                                .to(byNamePattern.getRampTo())
-                                .during(byNamePattern.getRampDuration()),
-                        constantUsersPerSec(byNamePattern.getConstantRate())
-                                .during(byNamePattern.getConstantDuration())
+                        rampUsersPerSec(byNamePattern.rampFrom())
+                                .to(byNamePattern.rampTo())
+                                .during(byNamePattern.rampDuration()),
+                        constantUsersPerSec(byNamePattern.constantRate())
+                                .during(byNamePattern.constantDuration())
                 ),
                 listPokemon.injectOpen(
-                        rampUsersPerSec(listPattern.getRampFrom())
-                                .to(listPattern.getRampTo())
-                                .during(listPattern.getRampDuration()),
-                        constantUsersPerSec(listPattern.getConstantRate())
-                                .during(listPattern.getConstantDuration())
+                        rampUsersPerSec(listPattern.rampFrom())
+                                .to(listPattern.rampTo())
+                                .during(listPattern.rampDuration()),
+                        constantUsersPerSec(listPattern.constantRate())
+                                .during(listPattern.constantDuration())
                 ),
                 getPokemonAbilities.injectOpen(
-                        rampUsersPerSec(abilitiesPattern.getRampFrom())
-                                .to(abilitiesPattern.getRampTo())
-                                .during(abilitiesPattern.getRampDuration()),
-                        constantUsersPerSec(abilitiesPattern.getConstantRate())
-                                .during(abilitiesPattern.getConstantDuration())
+                        rampUsersPerSec(abilitiesPattern.rampFrom())
+                                .to(abilitiesPattern.rampTo())
+                                .during(abilitiesPattern.rampDuration()),
+                        constantUsersPerSec(abilitiesPattern.constantRate())
+                                .during(abilitiesPattern.constantDuration())
                 )
         );
     }
@@ -64,10 +64,10 @@ public class LoadTestStrategy implements TestStrategy {
         setUp.assertions(
                 global().responseTime()
                         .max()
-                        .lt(assertion.getMaxResponseTime()),
+                        .lt(assertion.maxResponseTime()),
                 global().successfulRequests()
                         .percent()
-                        .gt(assertion.getSuccessRate())
+                        .gt(assertion.successRate())
         );
     }
 }
