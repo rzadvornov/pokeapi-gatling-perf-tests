@@ -7,40 +7,32 @@ WORKDIR /app
 COPY build.gradle settings.gradle ./
 COPY gradle ./gradle
 
-# Download dependencies (optional, but speeds up subsequent steps)
+# Download dependencies
 RUN gradle dependencies --no-daemon
 
-# Copy source code and build the project
+# Copy source code
 COPY src ./src
-# The 'assemble' task is usually faster than 'build' if you only need the JAR/classes,
-# but 'build' is used here to ensure tests/other checks are run if required.
 RUN gradle build --no-daemon
 
----
-
+# ---------------------------------------------------
 # Runtime Stage: Minimal JRE 21
+# (Note: Standard comments start with #, not dashes)
+# ---------------------------------------------------
 FROM openjdk:21-jre-slim
 
-# Set up the application directory
 WORKDIR /app
 
-# The runtime stage needs very little.
-# Install 'curl' only if your application (or Gatling) specifically needs it at runtime.
-# If Gatling needs it, keep this section. Otherwise, remove it.
+# Install curl if needed (optional)
 RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
-# Copy only the compiled artifacts and resources needed for execution.
-
-# 1. Copy the executable Gatling files/classes (adjust path if your project structure differs)
-#    Gatling often runs from classes or test-output, not a standard JAR.
-#    The path below assumes the build directory contains the compiled classes/resources needed by Gradle/Gatling to run tests.
+# 1. Copy the build artifacts
 COPY --from=builder /app/build /app/build
 
-# 2. Copy the Gradle Wrapper and essential files needed to run the 'gatlingRun' task
+# 2. Copy the Gradle Wrapper (Make sure to copy the wrapper script specifically)
 COPY --from=builder /app/gradlew /app/
 COPY --from=builder /app/gradle /app/gradle
 
-# 3. Copy the configuration/settings files required by the wrapper
+# 3. Copy build configuration
 COPY --from=builder /app/build.gradle /app/
 COPY --from=builder /app/settings.gradle /app/
 
