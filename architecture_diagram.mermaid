@@ -1,0 +1,83 @@
+classDiagram
+    class PokemonSimulation {
+        -TestConfig config
+        -TestType testType
+        +PokemonSimulation()
+    }
+    
+    class TestStrategy {
+        <<interface>>
+        +buildPopulation() List~PopulationBuilder~
+        +configureAssertions() void
+    }
+    
+    class TestType {
+        <<enumeration>>
+        LOAD
+        STRESS
+        SPIKE
+        ENDURANCE
+        VOLUME
+        -String name
+        -TestStrategy strategy
+        +getStrategy() TestStrategy
+        +fromString() TestType
+    }
+    
+    class LoadTestStrategy {
+        +buildPopulation() List~PopulationBuilder~
+        +configureAssertions() void
+    }
+    
+    class StressTestStrategy {
+        +buildPopulation() List~PopulationBuilder~
+        +configureAssertions() void
+    }
+    
+    class SpikeTestStrategy {
+        +buildPopulation() List~PopulationBuilder~
+        +configureAssertions() void
+    }
+    
+    class EnduranceTestStrategy {
+        +buildPopulation() List~PopulationBuilder~
+        +configureAssertions() void
+    }
+    
+    class VolumeTestStrategy {
+        +buildPopulation() List~PopulationBuilder~
+        +configureAssertions() void
+    }
+    
+    class TestConfig {
+        -HttpConfig http
+        -Map~String,LoadPattern~ loadPatterns
+        -Map~String,Assertion~ assertions
+        +load(String) TestConfig
+    }
+    
+    class HttpProtocolFactory {
+        +create(TestConfig) HttpProtocolBuilder
+    }
+    
+    class ScenarioFactory {
+        +createGetPokemonById() ScenarioBuilder
+        +createGetPokemonByName() ScenarioBuilder
+        +createListPokemon() ScenarioBuilder
+        +createGetPokemonAbilities() ScenarioBuilder
+        +createMixedOperations() ScenarioBuilder
+    }
+    
+    TestStrategy <|.. LoadTestStrategy
+    TestStrategy <|.. StressTestStrategy
+    TestStrategy <|.. SpikeTestStrategy
+    TestStrategy <|.. EnduranceTestStrategy
+    TestStrategy <|.. VolumeTestStrategy
+    
+    TestType --> TestStrategy : contains
+    PokemonSimulation --> TestType : uses
+    PokemonSimulation --> TestConfig : uses
+    PokemonSimulation --> HttpProtocolFactory : uses
+    PokemonSimulation --> ScenarioFactory : uses
+    TestStrategy --> TestConfig : uses
+    HttpProtocolFactory --> TestConfig : uses

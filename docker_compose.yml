@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  gatling-load-test:
+    build: ../Downloads
+    container_name: gatling-load-test
+    environment:
+      - TEST_TYPE=load
+    volumes:
+      - ./results/load:/app/build/reports/gatling
+    command: ["loadTest"]
+
+  gatling-stress-test:
+    build: ../Downloads
+    container_name: gatling-stress-test
+    environment:
+      - TEST_TYPE=stress
+    volumes:
+      - ./results/stress:/app/build/reports/gatling
+    command: ["stressTest"]
+
+  gatling-spike-test:
+    build: ../Downloads
+    container_name: gatling-spike-test
+    environment:
+      - TEST_TYPE=spike
+    volumes:
+      - ./results/spike:/app/build/reports/gatling
+    command: ["spikeTest"]
+
+  gatling-endurance-test:
+    build: ../Downloads
+    container_name: gatling-endurance-test
+    environment:
+      - TEST_TYPE=endurance
+    volumes:
+      - ./results/endurance:/app/build/reports/gatling
+    command: ["enduranceTest"]
+
+  gatling-volume-test:
+    build: ../Downloads
+    container_name: gatling-volume-test
+    environment:
+      - TEST_TYPE=volume
+    volumes:
+      - ./results/volume:/app/build/reports/gatling
+    command: ["volumeTest"]
