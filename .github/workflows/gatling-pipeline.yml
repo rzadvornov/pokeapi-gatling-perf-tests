@@ -33,7 +33,7 @@ jobs:
           mkdir results
           # Runs the container with the input selected in the dropdown
           docker run --rm \
-            -v ${{ github.workspace }}/results:/app/build/reports/gatling \
+            -v ${{ github.workspace }}/results:/app/results \
             -e TEST_TYPE=${{ inputs.test_type }} \
             gatling-performance-test
         continue-on-error: true
