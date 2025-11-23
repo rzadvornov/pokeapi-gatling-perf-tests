@@ -99,9 +99,9 @@ This project follows SOLID principles:
 
 ## Prerequisites
 
-- Java 11 or higher
-- Gradle 8.x
-- Docker and Docker Compose
+- Java 21 or higher
+- Gradle 9.2
+- Docker or Docker Compose
 - Git
 
 ## Local Setup
