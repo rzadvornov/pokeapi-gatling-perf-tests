@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # Construct the task name (e.g., load -> loadTest)
 TASK_NAME="${TEST_TYPE}Test"
 echo "Running Gradle task: $TASK_NAME"
