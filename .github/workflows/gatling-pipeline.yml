@@ -44,12 +44,17 @@ jobs:
         run: |
           mkdir public
           
-          REPORT_DIR=$(find results -mindepth 1 -maxdepth 1 -type d | head -n 1)
+          # FIX: Find the single dated report directory inside results/ (e.g., results/pokemonsimulation-...)
+          # The Dockerfile fix should ensure this dated directory exists here.
+          REPORT_SUB_DIR=$(find results -mindepth 1 -maxdepth 1 -type d -printf "%f\n" | head -n 1)
+          FULL_INDEX_PATH="results/$REPORT_SUB_DIR/index.html"
           
-          if [ -f "results/index.html" ]; then
-            echo "Found report index.html in results/."
-            # Copy ALL contents (index.html, js/, style/, etc.) from results/ to public/
-            cp -r results/* public/
+          echo "Looking for report at: $FULL_INDEX_PATH"
+
+          if [ -f "$FULL_INDEX_PATH" ]; then
+            echo "Found report index.html at $FULL_INDEX_PATH."
+            # Copy ALL contents (index.html, js/, style/, etc.) from the SUB_DIR to public/
+            cp -r "results/$REPORT_SUB_DIR/"* public/
             echo "Report files successfully copied to public/."
             echo "report_exists=true" >> $GITHUB_OUTPUT
           else
