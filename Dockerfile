@@ -24,7 +24,7 @@ RUN gradle build --no-daemon
 
 # Stage 2: Runtime
 # Use a lean base image for the final runtime
-FROM eclipse-temurin/temurin:21-jre-slim
+FROM temurin:21-jre-slim
 
 # Set initial user to root (default) for package installation
 # User is implicitly 'root' here.
