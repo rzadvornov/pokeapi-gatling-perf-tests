@@ -26,7 +26,7 @@ RUN gradle build --no-daemon
 # --- End of Builder Stage ---
 
 # Stage 2: Runtime
-FROM openjdk:21-jre AS runtime
+FROM eclipse-temurin:21-jdk-alpine AS runtime
 
 # Set initial user to root (default) for package installation
 # The user is 'root' at this point.
