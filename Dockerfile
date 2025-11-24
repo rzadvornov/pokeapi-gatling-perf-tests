@@ -67,7 +67,7 @@ RUN chown -R $USER_NAME:$USER_NAME /home/$USER_NAME/app
 
 # Create results directory (run as root)
 RUN mkdir -p results
-# FIX: Change ownership of the results directory to the non-root user ($USER_NAME = appuser)
+# Change ownership of the results directory to the non-root user ($USER_NAME = appuser)
 RUN chown -R $USER_NAME:$USER_NAME results
 
 # Set environment variable
