@@ -28,7 +28,7 @@ FROM eclipse-temurin:21-jdk
 
 # 2. Define the same non-root user and group
 ARG USER_NAME=appuser
-ARG USER_UID=1000
+ARG USER_UID=1010
 RUN groupadd --gid $USER_UID $USER_NAME \
     && useradd --uid $USER_UID --gid $USER_UID -m $USER_NAME \
     && chown -R $USER_NAME:$USER_NAME /home/$USER_NAME
