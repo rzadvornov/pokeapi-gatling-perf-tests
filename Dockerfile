@@ -6,9 +6,10 @@ FROM gradle:8.5-jdk21-jammy AS builder
 # Using UID 1010 to avoid conflict with common default UIDs (like 1000)
 ARG USER_NAME=gradleuser
 ARG USER_UID=1010
-
-# Install shadow package to get 'groupadd' and 'useradd' on this Debian-based image.
-RUN apt-get update && apt-get install -y shadow && rm -rf /var/lib/apt/lists/*
+# FIX: Install shadow package (for useradd/groupadd) and ca-certificates in a robust command.
+RUN apt-get update \
+    && apt-get install -y shadow ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 RUN groupadd --gid $USER_UID $USER_NAME \
     && useradd --uid $USER_UID --gid $USER_UID -m $USER_NAME \
     && chown -R $USER_NAME:$USER_NAME /home/$USER_NAME
@@ -36,8 +37,10 @@ FROM eclipse-temurin:21-jre-jammy AS runtime
 # The user is 'root' at this point.
 
 # Install dependencies (must be run as root)
-# Reverting to apt-get for the Debian-based Jammy image, and adding 'shadow'.
-RUN apt-get update && apt-get install -y curl shadow && rm -rf /var/lib/apt/lists/*
+# Combining apt-get update and install into a single, robust command to install curl, shadow, and ca-certificates.
+RUN apt-get update \
+    && apt-get install -y curl shadow ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
 # 2. Define the same non-root user and group
 ARG USER_NAME=appuser
