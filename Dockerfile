@@ -5,7 +5,8 @@ FROM gradle:8.5-jdk21-alpine AS builder
 # 1. Create a non-root user and set up the home directory
 ARG USER_NAME=gradleuser
 ARG USER_UID=1010
-# FIX: Use apk for Alpine. Install 'shadow' for useradd/groupadd.
+
+# Use apk for Alpine. Install 'shadow' for useradd/groupadd.
 RUN apk update \
     && apk add --no-cache shadow \
     && rm -rf /var/cache/apk/*
@@ -52,7 +53,7 @@ RUN groupadd --gid $USER_UID $USER_NAME \
 WORKDIR /home/$USER_NAME/app
 
 # 3. Copy artifacts and files from the builder stage.
-# This COPY runs as root (default user), which allows us to change ownership later.
+# This COPY runs as root (default user).
 COPY --from=builder /home/gradleuser/app/build ./build
 COPY --from=builder /home/gradleuser/app/gradlew ./
 COPY --from=builder /home/gradleuser/app/gradle ./gradle
@@ -61,23 +62,16 @@ COPY --from=builder /home/gradleuser/app/settings.gradle ./
 COPY --from=builder /home/gradleuser/app/src ./src
 
 # Explicitly ensure the new user owns the application directory (BEST PRACTICE)
-# This RUN command now executes as root, resolving the permission denied error.
+# This RUN command executes as root, resolving previous ownership issues.
 RUN chown -R $USER_NAME:$USER_NAME /home/$USER_NAME/app
 
-# Switch to the non-root user *after* all root operations are complete.
-USER $USER_NAME
-
-# Create results directory (now correctly owned by $USER_NAME)
+# Create results directory (run as root)
 RUN mkdir -p results
 
 # Set environment variable
 ENV TEST_TYPE=load
 
-# Ensure the gradlew script is executable
-RUN chmod +x gradlew
-
-# 4. Create and set the entrypoint script
-# Using a clean COPY heredoc for the script content.
+# 4. Create and set the entrypoint script (run as root)
 COPY <<EOF run-tests.sh
 #!/bin/bash
 # Construct the task name (e.g., load -> loadTest)
@@ -92,7 +86,11 @@ echo "Copying reports to /home/\$USER_NAME/app/results..."
 cp -r build/reports/gatling/* results/ 2>/dev/null || echo "No reports found to copy."
 exit \$EXIT_CODE
 EOF
+# Ensure the gradlew script is executable (FIX: Runs as root to resolve "Operation not permitted")
 RUN chmod +x run-tests.sh
+
+# Switch to the non-root user *just* before the entrypoint.
+USER $USER_NAME
 
 # The final user is $USER_NAME and the entrypoint will run as this user
 ENTRYPOINT ["./run-tests.sh"]
