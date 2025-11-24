@@ -1,15 +1,14 @@
 # Stage 1: Builder
-# Switching to the robust Jammy (Ubuntu 22.04 LTS) base for stable apt-get resolution.
-FROM gradle:8.5-jdk21-jammy AS builder
+# Switched to Alpine base to avoid persistent apt-get network errors.
+FROM gradle:8.5-jdk21-alpine AS builder
 
 # 1. Create a non-root user and set up the home directory
-# Using UID 1010 to avoid conflict with common default UIDs (like 1000)
 ARG USER_NAME=gradleuser
 ARG USER_UID=1010
-# FIX: Install shadow package (for useradd/groupadd) and ca-certificates in a robust command.
-RUN apt-get update \
-    && apt-get install -y shadow ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
+# FIX: Use apk for Alpine. Install 'shadow' for useradd/groupadd.
+RUN apk update \
+    && apk add --no-cache shadow \
+    && rm -rf /var/cache/apk/*
 RUN groupadd --gid $USER_UID $USER_NAME \
     && useradd --uid $USER_UID --gid $USER_UID -m $USER_NAME \
     && chown -R $USER_NAME:$USER_NAME /home/$USER_NAME
@@ -30,17 +29,17 @@ RUN gradle build --no-daemon
 # --- End of Builder Stage ---
 
 # Stage 2: Runtime
-# Switching the runtime to the stable, Debian-based JRE Jammy image.
-FROM eclipse-temurin:21-jre-jammy AS runtime
+# Switched to JRE Alpine base.
+FROM eclipse-temurin:21-jre-alpine AS runtime
 
 # Set initial user to root (default) for package installation
 # The user is 'root' at this point.
 
 # Install dependencies (must be run as root)
-# Combining apt-get update and install into a single, robust command to install curl, shadow, and ca-certificates.
-RUN apt-get update \
-    && apt-get install -y curl shadow ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
+# Use apk for Alpine. Install 'curl' and 'shadow'.
+RUN apk update \
+    && apk add --no-cache curl shadow \
+    && rm -rf /var/cache/apk/*
 
 # 2. Define the same non-root user and group
 ARG USER_NAME=appuser
@@ -52,7 +51,7 @@ RUN groupadd --gid $USER_UID $USER_NAME \
 # Set the application working directory
 WORKDIR /home/$USER_NAME/app
 
-# Switch to the non-root user *after* root operations (like apt-get and user creation)
+# Switch to the non-root user *after* root operations
 USER $USER_NAME
 
 # 3. Copy artifacts and files from the builder stage as the new user.
