@@ -78,7 +78,7 @@ COPY <<EOF run-tests.sh
 TASK_NAME="${TEST_TYPE}Test"
 echo "Running Gradle task: \$TASK_NAME"
 
-./gradlew "\$TASK_NAME"
+./gradlew "\$TASK_NAME" --warn
 EXIT_CODE=\$?
 
 echo "Copying reports to /home/\$USER_NAME/app/results..."
