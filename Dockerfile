@@ -73,7 +73,7 @@ ENV TEST_TYPE=load
 
 # 4. Create and set the entrypoint script (run as root)
 COPY <<EOF run-tests.sh
-#!/bin/bash
+#!/bin/sh
 # Construct the task name (e.g., load -> loadTest)
 TASK_NAME="${TEST_TYPE}Test"
 echo "Running Gradle task: \$TASK_NAME"
@@ -86,7 +86,7 @@ echo "Copying reports to /home/\$USER_NAME/app/results..."
 cp -r build/reports/gatling/* results/ 2>/dev/null || echo "No reports found to copy."
 exit \$EXIT_CODE
 EOF
-# Ensure the gradlew script is executable (FIX: Runs as root to resolve "Operation not permitted")
+# Ensure the gradlew script is executable (Runs as root to resolve "Operation not permitted")
 RUN chmod +x run-tests.sh
 
 # Switch to the non-root user *just* before the entrypoint.
