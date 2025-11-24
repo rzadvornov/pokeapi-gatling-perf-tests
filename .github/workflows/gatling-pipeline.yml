@@ -30,10 +30,15 @@ jobs:
 
       - name: Run Gatling Simulation
         run: |
-          mkdir results
+          # 1. Ensure the directory exists
+          mkdir -p results
+          # 2. IMPORTANT: Set universal write permission on the host directory 
+          # to prevent volume mount permission issues with the non-root container user.
+          chmod -R 777 results
+          
           # Runs the container with the input selected in the dropdown
           docker run --rm \
-            -v ${{ github.workspace }}/results:/app/results \
+            -v ${{ github.workspace }}/results:/home/appuser/app/results \
             -e TEST_TYPE=${{ inputs.test_type }} \
             gatling-performance-test
         continue-on-error: true
