@@ -74,39 +74,38 @@ RUN chown -R $USER_NAME:$USER_NAME results
 ENV TEST_TYPE=load
 
 # 4. Create and set the entrypoint script (run as root)
-# NOTE: The script logic has been updated to robustly find and copy the Gatling report.
 COPY <<EOF run-tests.sh
 #!/bin/sh
 
-# Construct the task name (e.g., load -> loadTest)
 TASK_NAME="${TEST_TYPE}Test"
 echo "Running Gradle task: \$TASK_NAME"
 
-# Run the test task with --warn flag to reduce verbose Gradle logging
 ./gradlew "\$TASK_NAME" --warn
 EXIT_CODE=\$?
 
-# Check if the test failed (EXIT_CODE != 0). We still attempt to copy reports on failure.
 if [ \$EXIT_CODE -ne 0 ]; then
     echo "WARNING: Test run failed with exit code \$EXIT_CODE. Attempting to copy any partial reports."
 fi
 
-# Use find to locate the latest, dated report directory inside build/reports/gatling.
-# -mindepth 1 -maxdepth 1 ensures we only look one level deep.
-LATEST_REPORT_DIR=\$(find build/reports/gatling -mindepth 1 -maxdepth 1 -type d | sort -r | head -n 1)
+# Use find to locate the LATEST, FULL PATH to the dated report directory.
+LATEST_REPORT_FULL_PATH=\$(find build/reports/gatling -mindepth 1 -maxdepth 1 -type d | sort -r | head -n 1)
 
-echo "Checking for latest report in: \$LATEST_REPORT_DIR"
+echo "Checking for latest report in: \$LATEST_REPORT_FULL_PATH"
 
-if [ -d "\$LATEST_REPORT_DIR" ]; then
-    # Copy the *contents* of the latest report directory to the results/ volume mount
-    echo "Copying contents of report directory to results/..."
-    cp -r "\$LATEST_REPORT_DIR" results/
-    echo "Report files successfully copied to results/."
+if [ -d "\$LATEST_REPORT_FULL_PATH" ]; then
+    # The copy operation will look like: cp -r build/reports/gatling/date_stamp results/
+    echo "Copying dated report directory to results/..."
+    
+    # We copy the FULL PATH found by find. This is the correct fix.
+    cp -r "\$LATEST_REPORT_FULL_PATH" results/
+    
+    # We should confirm the file was copied using the original reported path:
+    REPORT_NAME=\$(basename "\$LATEST_REPORT_FULL_PATH")
+    echo "Report files successfully copied to results/\$REPORT_NAME."
 else
     echo "ERROR: Report directory not found at build/reports/gatling. No reports copied."
 fi
 
-# The exit code from the gradle task determines the container's final exit status.
 exit \$EXIT_CODE
 EOF
 # Ensure the gradlew script is executable (Runs as root to resolve "Operation not permitted")
