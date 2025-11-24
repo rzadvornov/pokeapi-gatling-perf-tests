@@ -1,8 +1,9 @@
 # Stage 1: Builder
-# Use the official image
+# Use the official Gradle image for building
 FROM gradle:9.2-jdk21 AS builder
 
 # 1. Create a non-root user and set up the home directory
+# Using UID 1010 to avoid conflict with common default UIDs (like 1000)
 ARG USER_NAME=gradleuser
 ARG USER_UID=1010
 RUN groupadd --gid $USER_UID $USER_NAME \
@@ -22,12 +23,13 @@ RUN gradle dependencies --no-daemon
 COPY src ./src
 RUN gradle build --no-daemon
 
+# --- End of Builder Stage ---
+
 # Stage 2: Runtime
-# Use a lean base image for the final runtime
-FROM adoptium/temurin:21-jre-alpine
+FROM openjdk:21-jre-slim AS runtime
 
 # Set initial user to root (default) for package installation
-# User is implicitly 'root' here.
+# The user is 'root' at this point.
 
 # Install dependencies (must be run as root)
 RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
@@ -39,14 +41,13 @@ RUN groupadd --gid $USER_UID $USER_NAME \
     && useradd --uid $USER_UID --gid $USER_UID -m $USER_NAME \
     && chown -R $USER_NAME:$USER_NAME /home/$USER_NAME
 
-# Set the working directory (optional, but good practice)
+# Set the application working directory
 WORKDIR /home/$USER_NAME/app
 
-# This is the crucial fix: The USER instruction must be re-run after the root-based RUN apt-get install...
+# This prevents the subsequent 'mkdir' from getting Permission Denied.
 USER $USER_NAME
 
 # 3. Copy artifacts and files from the builder stage as the new user.
-# The files copied here will automatically be owned by $USER_NAME.
 COPY --from=builder /home/gradleuser/app/build ./build
 COPY --from=builder /home/gradleuser/app/gradlew ./
 COPY --from=builder /home/gradleuser/app/gradle ./gradle
@@ -54,7 +55,10 @@ COPY --from=builder /home/gradleuser/app/build.gradle ./
 COPY --from=builder /home/gradleuser/app/settings.gradle ./
 COPY --from=builder /home/gradleuser/app/src ./src
 
-# Create results directory (will be owned by $USER_NAME, since USER is set)
+# Explicitly ensure the new user owns the application directory (best practice)
+RUN chown -R $USER_NAME:$USER_NAME /home/$USER_NAME/app
+
+# Create results directory (now correctly owned by $USER_NAME)
 RUN mkdir -p results
 
 # Set environment variable
@@ -63,10 +67,8 @@ ENV TEST_TYPE=load
 # Ensure the gradlew script is executable
 RUN chmod +x gradlew
 
-# We assume 'appuser' is the name of the runtime user (ARG USER_NAME=appuser)
-RUN chown -R $USER_NAME:$USER_NAME /home/$USER_NAME/app
-
-# Using a heredoc is cleaner for multi-line shell scripts
+# 4. Create and set the entrypoint script
+# Using a clean COPY heredoc for the script content.
 COPY <<EOF run-tests.sh
 #!/bin/bash
 # Construct the task name (e.g., load -> loadTest)
