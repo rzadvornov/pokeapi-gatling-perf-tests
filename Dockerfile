@@ -1,5 +1,6 @@
 # Stage 1: Builder
-FROM gradle:9.2-jdk21 AS builder
+# Switching to the robust Jammy (Ubuntu 22.04 LTS) base for stable apt-get resolution.
+FROM gradle:8.5-jdk21-jammy AS builder
 
 # 1. Create a non-root user and set up the home directory
 # Using UID 1010 to avoid conflict with common default UIDs (like 1000)
@@ -28,14 +29,15 @@ RUN gradle build --no-daemon
 # --- End of Builder Stage ---
 
 # Stage 2: Runtime
-# Using the desired Java 21 base, optimized for runtime (JRE) and Alpine Linux.
-FROM eclipse-temurin:21-jre-alpine AS runtime
+# Switching the runtime to the stable, Debian-based JRE Jammy image.
+FROM eclipse-temurin:21-jre-jammy AS runtime
 
 # Set initial user to root (default) for package installation
 # The user is 'root' at this point.
 
 # Install dependencies (must be run as root)
-RUN apk update && apk add curl shadow && rm -rf /var/cache/apk/*
+# Reverting to apt-get for the Debian-based Jammy image, and adding 'shadow'.
+RUN apt-get update && apt-get install -y curl shadow && rm -rf /var/lib/apt/lists/*
 
 # 2. Define the same non-root user and group
 ARG USER_NAME=appuser
@@ -47,7 +49,7 @@ RUN groupadd --gid $USER_UID $USER_NAME \
 # Set the application working directory
 WORKDIR /home/$USER_NAME/app
 
-# Switch to the non-root user *after* root operations (like apk and user creation)
+# Switch to the non-root user *after* root operations (like apt-get and user creation)
 USER $USER_NAME
 
 # 3. Copy artifacts and files from the builder stage as the new user.
