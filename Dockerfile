@@ -1,11 +1,13 @@
 # Stage 1: Builder
-# Use the official Gradle image for building
 FROM gradle:9.2-jdk21 AS builder
 
 # 1. Create a non-root user and set up the home directory
 # Using UID 1010 to avoid conflict with common default UIDs (like 1000)
 ARG USER_NAME=gradleuser
 ARG USER_UID=1010
+
+# Install shadow package to get 'groupadd' and 'useradd' on this Debian-based image.
+RUN apt-get update && apt-get install -y shadow && rm -rf /var/lib/apt/lists/*
 RUN groupadd --gid $USER_UID $USER_NAME \
     && useradd --uid $USER_UID --gid $USER_UID -m $USER_NAME \
     && chown -R $USER_NAME:$USER_NAME /home/$USER_NAME
@@ -26,13 +28,14 @@ RUN gradle build --no-daemon
 # --- End of Builder Stage ---
 
 # Stage 2: Runtime
-FROM eclipse-temurin:21-jdk-alpine
+# Using the desired Java 21 base, optimized for runtime (JRE) and Alpine Linux.
+FROM eclipse-temurin:21-jre-alpine AS runtime
 
 # Set initial user to root (default) for package installation
 # The user is 'root' at this point.
 
 # Install dependencies (must be run as root)
-RUN apk update && apk add curl && rm -rf /var/cache/apk/*
+RUN apk update && apk add curl shadow && rm -rf /var/cache/apk/*
 
 # 2. Define the same non-root user and group
 ARG USER_NAME=appuser
@@ -44,7 +47,7 @@ RUN groupadd --gid $USER_UID $USER_NAME \
 # Set the application working directory
 WORKDIR /home/$USER_NAME/app
 
-# This prevents the subsequent 'mkdir' from getting Permission Denied.
+# Switch to the non-root user *after* root operations (like apk and user creation)
 USER $USER_NAME
 
 # 3. Copy artifacts and files from the builder stage as the new user.
