@@ -31,7 +31,7 @@ RUN gradle build --no-daemon
 
 # Stage 2: Runtime
 # Switched to JRE Alpine base.
-FROM eclipse-temurin:21-jre-alpine AS runtime
+FROM eclipse-temurin:21-jdk-alpine AS runtime
 
 # Set initial user to root (default) for package installation
 # The user is 'root' at this point.
