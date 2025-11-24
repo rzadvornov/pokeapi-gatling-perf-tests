@@ -51,10 +51,8 @@ RUN groupadd --gid $USER_UID $USER_NAME \
 # Set the application working directory
 WORKDIR /home/$USER_NAME/app
 
-# Switch to the non-root user *after* root operations
-USER $USER_NAME
-
-# 3. Copy artifacts and files from the builder stage as the new user.
+# 3. Copy artifacts and files from the builder stage.
+# This COPY runs as root (default user), which allows us to change ownership later.
 COPY --from=builder /home/gradleuser/app/build ./build
 COPY --from=builder /home/gradleuser/app/gradlew ./
 COPY --from=builder /home/gradleuser/app/gradle ./gradle
@@ -62,8 +60,12 @@ COPY --from=builder /home/gradleuser/app/build.gradle ./
 COPY --from=builder /home/gradleuser/app/settings.gradle ./
 COPY --from=builder /home/gradleuser/app/src ./src
 
-# Explicitly ensure the new user owns the application directory (best practice)
+# Explicitly ensure the new user owns the application directory (BEST PRACTICE)
+# This RUN command now executes as root, resolving the permission denied error.
 RUN chown -R $USER_NAME:$USER_NAME /home/$USER_NAME/app
+
+# Switch to the non-root user *after* all root operations are complete.
+USER $USER_NAME
 
 # Create results directory (now correctly owned by $USER_NAME)
 RUN mkdir -p results
