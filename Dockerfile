@@ -32,7 +32,7 @@ FROM eclipse-temurin:21-jdk-alpine
 # The user is 'root' at this point.
 
 # Install dependencies (must be run as root)
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+RUN apk update && apk add curl && rm -rf /var/cache/apk/*
 
 # 2. Define the same non-root user and group
 ARG USER_NAME=appuser
