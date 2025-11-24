@@ -22,8 +22,6 @@ RUN gradle dependencies --no-daemon
 COPY src ./src
 RUN gradle build --no-daemon
 
-# --- End of Builder Stage ---
-
 # Stage 2: Runtime
 # Use a lean base image for the final runtime
 FROM eclipse-temurin/temurin:21-jre-slim
@@ -44,7 +42,6 @@ RUN groupadd --gid $USER_UID $USER_NAME \
 # Set the working directory (optional, but good practice)
 WORKDIR /home/$USER_NAME/app
 
-# 💡 FIX 2: Switch to the non-root user *immediately* before copying artifacts.
 # This is the crucial fix: The USER instruction must be re-run after the root-based RUN apt-get install...
 USER $USER_NAME
 
