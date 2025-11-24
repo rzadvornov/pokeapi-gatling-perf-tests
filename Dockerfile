@@ -1,6 +1,6 @@
 # Stage 1: Builder
 # Switched to Alpine base to avoid persistent apt-get network errors.
-FROM gradle:8.5-jdk21-alpine AS builder
+FROM gradle:9.2-jdk21-alpine AS builder
 
 # 1. Create a non-root user and set up the home directory
 ARG USER_NAME=gradleuser
