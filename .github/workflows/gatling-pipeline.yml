@@ -46,12 +46,14 @@ jobs:
           
           REPORT_DIR=$(find results -mindepth 1 -maxdepth 1 -type d | head -n 1)
           
-          if [ -d "$REPORT_DIR" ]; then
-            echo "Found report in $REPORT_DIR"
-            cp -r "$REPORT_DIR"/* public/
+          if [ -f "results/index.html" ]; then
+            echo "Found report index.html in results/."
+            # Copy ALL contents (index.html, js/, style/, etc.) from results/ to public/
+            cp -r results/* public/
+            echo "Report files successfully copied to public/."
             echo "report_exists=true" >> $GITHUB_OUTPUT
           else
-            echo "No report directory found!"
+            echo "No index.html file found in the results directory!"
             echo "report_exists=false" >> $GITHUB_OUTPUT
           fi
 
