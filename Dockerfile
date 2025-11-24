@@ -4,7 +4,7 @@ FROM gradle:9.2-jdk21 AS builder
 
 # 1. Create a non-root user and set up the home directory
 ARG USER_NAME=gradleuser
-ARG USER_UID=1000
+ARG USER_UID=1010
 RUN groupadd --gid $USER_UID $USER_NAME \
     && useradd --uid $USER_UID --gid $USER_UID -m $USER_NAME \
     && chown -R $USER_NAME:$USER_NAME /home/$USER_NAME
