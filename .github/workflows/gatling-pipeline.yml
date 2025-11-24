@@ -42,11 +42,6 @@ jobs:
             -e TEST_TYPE=${{ inputs.test_type }} \
             gatling-performance-test
         continue-on-error: true
-
-      - name: Debug Results Directory Contents
-        run: |
-          echo "Listing contents of the results directory:"
-          ls -R results/
           
       - name: Prepare Report for Visualization
         id: prepare_report
