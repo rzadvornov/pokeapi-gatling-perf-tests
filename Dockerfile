@@ -100,7 +100,7 @@ echo "Checking for latest report in: \$LATEST_REPORT_DIR"
 if [ -d "\$LATEST_REPORT_DIR" ]; then
     # Copy the *contents* of the latest report directory to the results/ volume mount
     echo "Copying contents of report directory to results/..."
-    cp -r "\$LATEST_REPORT_DIR"/* results/
+    cp -r "\$LATEST_REPORT_DIR" results/
     echo "Report files successfully copied to results/."
 else
     echo "ERROR: Report directory not found at build/reports/gatling. No reports copied."
